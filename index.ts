@@ -1,43 +1,42 @@
 let seconds: number;
-let intervalTimer: any;
+let intervalTimer: number;
 
 // TODO:
-// Победа на уровне
 // Модальные окна
 // Уровни сложности
 // Класс таймер
 
-type card = {
+interface Card {
     name: string;
     src: string;
 };
 
-const book: card = {
+const Book: Card = {
     name: 'book',
     src: 'book.png'
 };
 
-const bug: card = {
+const Bug: Card = {
     name: 'bug',
     src: 'bug.png'
 };
 
-const gear: card = {
+const Gear: Card = {
     name: 'gear',
     src: 'gear.png'
 };
 
-const head: card = {
+const Head: Card = {
     name: 'head',
     src: 'head.png'
 };
 
-const laptop: card = {
+const Laptop: Card = {
     name: 'laptop',
     src: 'laptop.png'
 };
 
-const typeOfCard: Array<card> = [book, bug, gear, head, laptop];
+const TypeOfCard: Array<Card> = [Book, Bug, Gear, Head, Laptop];
 
 function start(): void{
     const cards: any = document.querySelector('#cards');
@@ -55,14 +54,12 @@ function start(): void{
 }
 
 function createCards(count: number): void {
-    const cards: any = document.querySelector('#cards');
-    // cards.classList.toggle('row-cols-5');
-    // cards.classList.toggle('row-cols-3')
+    const cards: Element = document.querySelector('#cards');
 
-    const arrayTypeOfCards: card[] = createArrayCard(count);
+    const arrayTypeOfCards: Card[] = createArrayCard(count);
 
     for(let i = 0; i < count; i++){
-        let divScene: any = document.createElement('div');
+        let divScene: Element = document.createElement('div');
         divScene.className = 'scene col p-0 m-1';
         
         let divCard: any = document.createElement('div');
@@ -75,16 +72,16 @@ function createCards(count: number): void {
                 divCard.classList.toggle('is-flipped');
             }
             if (!divCard.classList.contains('checked'))
-                check(arrayTypeOfCards, count);
+                check(arrayTypeOfCards, count, divCard.id);
         });
 
-        let divFront: any = document.createElement('div');
-        divFront.className = 'rounded card__face card__face--front border border-dark';
-        divFront.innerHTML = '<img src="picture/back.png" style="height: auto; width: 100%;">';
+        const divFront: Element = createDivBlock(
+            'rounded card__face card__face--front border border-dark',
+            '<img src="picture/back.png" style="height: auto; width: 100%;">');
 
-        let divBack: any = document.createElement('div');
-        divBack.className = 'rounded card__face card__face--back border border-dark';
-        divBack.innerHTML = `<img src="picture/${arrayTypeOfCards[i].src}" style="height: auto; width: 100%;">`;
+        const divBack: Element = createDivBlock(
+            'rounded card__face card__face--back border border-dark',
+            `<img src="picture/${arrayTypeOfCards[i].src}" style="height: auto; width: 100%;">`);
 
         cards.append(divScene);
         divScene.append(divCard);
@@ -93,31 +90,42 @@ function createCards(count: number): void {
     }
 }
 
-function createArrayCard(count: number): Array<card>{
-    let array: card[] = [];
+function createDivBlock(className: string, html: string): Element {
+    const divBlock: Element = document.createElement('div');
+    
+    divBlock.className = className;
+    divBlock.innerHTML = html;
+
+    return divBlock;
+}
+
+function createArrayCard(count: number): Array<Card>{
+    let array: Card[] = [];
     for(let i: number = 0; i < count / 2; i++){
-        array[i] = typeOfCard[i];
-        array[(count / 2) + i] = typeOfCard[i];
+        array[i] = TypeOfCard[i];
+        array[(count / 2) + i] = TypeOfCard[i];
     }
-    shuffle(array);
-    shuffle(array);
-    shuffle(array);
+    shuffle(array, 3);
 
     return array;
 }
 
-function shuffle(array: card[]): void{
-    array.sort(() => Math.random() - 0.5);
+function shuffle(array: Card[], count: number = 1): void{
+    for (let i: number = 0; i < count; i++)
+        array.sort(() => Math.random() - 0.5);
 }
 
-function check(types: card[], countCards: number): void {
+function check(types: Card[], countCards: number, lastCardId: number): void {
     let cardsIsFlipped: any = document.querySelectorAll('.is-flipped');
     let cardsWithoutChecked: any[] = [];
     for (let crd of cardsIsFlipped){
-        if (!crd.classList.contains('checked')){
+        if (!crd.classList.contains('checked') && crd.id != lastCardId){
             cardsWithoutChecked.push(crd);
         }
     }
+ 
+    let lastCard: any = document.getElementById(`${lastCardId}`);
+    cardsWithoutChecked.push(lastCard);
     
     if (cardsWithoutChecked.length > 1){
         if (types[cardsWithoutChecked[0].id].name === types[cardsWithoutChecked[1].id].name){
@@ -130,9 +138,11 @@ function check(types: card[], countCards: number): void {
                 if(cardsIsChecked.length === countCards){
                     setPoint(seconds);
                     const result: boolean = confirm(`Вы прошли уровень.\nТекущее количество очков: ${getPoint()}\nИграем дальше?`);
+                    
                     if(result) 
                         restart();
-                    else finish();
+                    else 
+                        finish();
                 }
             }, 1700);
 
@@ -151,10 +161,10 @@ function check(types: card[], countCards: number): void {
             let timer: any = document.querySelector('#timer');
             timer.style.color = 'red';
             seconds -= 5;
-
+            
             setTimeout(() => {
-                cardsWithoutChecked[0].classList.toggle('is-flipped');
-                cardsWithoutChecked[1].classList.toggle('is-flipped');
+                cardsWithoutChecked[0].classList.remove('is-flipped');
+                cardsWithoutChecked[1].classList.remove('is-flipped');
                 timer.style.color = 'black';
             }, 500);
         }
@@ -163,7 +173,7 @@ function check(types: card[], countCards: number): void {
 }
 
 function timer(): void{
-    let timer: any = document.querySelector('#timer');
+    let timer: Element = document.querySelector('#timer');
     let min: number = Math.floor(seconds/60);
     let sec: number = seconds % 60;
     timer.textContent = sec > 9 ? `0${min}:${sec}` : `0${min}:0${sec}`;
@@ -180,7 +190,7 @@ function timer(): void{
 }
 
 function clearField(): void{
-    const field: any = document.querySelector('#cards');
+    const field: Element = document.querySelector('#cards');
     field.innerHTML = ''
 }
 

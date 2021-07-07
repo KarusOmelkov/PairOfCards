@@ -1,26 +1,27 @@
 let seconds;
 let intervalTimer;
-const book = {
+;
+const Book = {
     name: 'book',
     src: 'book.png'
 };
-const bug = {
+const Bug = {
     name: 'bug',
     src: 'bug.png'
 };
-const gear = {
+const Gear = {
     name: 'gear',
     src: 'gear.png'
 };
-const head = {
+const Head = {
     name: 'head',
     src: 'head.png'
 };
-const laptop = {
+const Laptop = {
     name: 'laptop',
     src: 'laptop.png'
 };
-const typeOfCard = [book, bug, gear, head, laptop];
+const TypeOfCard = [Book, Bug, Gear, Head, Laptop];
 function start() {
     const cards = document.querySelector('#cards');
     const buttons = document.querySelector('#buttons');
@@ -34,8 +35,6 @@ function start() {
 }
 function createCards(count) {
     const cards = document.querySelector('#cards');
-    // cards.classList.toggle('row-cols-5');
-    // cards.classList.toggle('row-cols-3')
     const arrayTypeOfCards = createArrayCard(count);
     for (let i = 0; i < count; i++) {
         let divScene = document.createElement('div');
@@ -49,42 +48,45 @@ function createCards(count) {
                 divCard.classList.toggle('is-flipped');
             }
             if (!divCard.classList.contains('checked'))
-                check(arrayTypeOfCards, count);
+                check(arrayTypeOfCards, count, divCard.id);
         });
-        let divFront = document.createElement('div');
-        divFront.className = 'rounded card__face card__face--front border border-dark';
-        divFront.innerHTML = '<img src="picture/back.png" style="height: auto; width: 100%;">';
-        let divBack = document.createElement('div');
-        divBack.className = 'rounded card__face card__face--back border border-dark';
-        divBack.innerHTML = `<img src="picture/${arrayTypeOfCards[i].src}" style="height: auto; width: 100%;">`;
+        const divFront = createDivBlock('rounded card__face card__face--front border border-dark', '<img src="picture/back.png" style="height: auto; width: 100%;">');
+        const divBack = createDivBlock('rounded card__face card__face--back border border-dark', `<img src="picture/${arrayTypeOfCards[i].src}" style="height: auto; width: 100%;">`);
         cards.append(divScene);
         divScene.append(divCard);
         divCard.append(divFront);
         divCard.append(divBack);
     }
 }
+function createDivBlock(className, html) {
+    const divBlock = document.createElement('div');
+    divBlock.className = className;
+    divBlock.innerHTML = html;
+    return divBlock;
+}
 function createArrayCard(count) {
     let array = [];
     for (let i = 0; i < count / 2; i++) {
-        array[i] = typeOfCard[i];
-        array[(count / 2) + i] = typeOfCard[i];
+        array[i] = TypeOfCard[i];
+        array[(count / 2) + i] = TypeOfCard[i];
     }
-    shuffle(array);
-    shuffle(array);
-    shuffle(array);
+    shuffle(array, 3);
     return array;
 }
-function shuffle(array) {
-    array.sort(() => Math.random() - 0.5);
+function shuffle(array, count = 1) {
+    for (let i = 0; i < count; i++)
+        array.sort(() => Math.random() - 0.5);
 }
-function check(types, countCards) {
+function check(types, countCards, lastCardId) {
     let cardsIsFlipped = document.querySelectorAll('.is-flipped');
     let cardsWithoutChecked = [];
     for (let crd of cardsIsFlipped) {
-        if (!crd.classList.contains('checked')) {
+        if (!crd.classList.contains('checked') && crd.id != lastCardId) {
             cardsWithoutChecked.push(crd);
         }
     }
+    let lastCard = document.getElementById(`${lastCardId}`);
+    cardsWithoutChecked.push(lastCard);
     if (cardsWithoutChecked.length > 1) {
         if (types[cardsWithoutChecked[0].id].name === types[cardsWithoutChecked[1].id].name) {
             cardsWithoutChecked[0].classList.add('checked');
@@ -117,8 +119,8 @@ function check(types, countCards) {
             timer.style.color = 'red';
             seconds -= 5;
             setTimeout(() => {
-                cardsWithoutChecked[0].classList.toggle('is-flipped');
-                cardsWithoutChecked[1].classList.toggle('is-flipped');
+                cardsWithoutChecked[0].classList.remove('is-flipped');
+                cardsWithoutChecked[1].classList.remove('is-flipped');
                 timer.style.color = 'black';
             }, 500);
         }
