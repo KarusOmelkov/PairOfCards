@@ -18,8 +18,8 @@ export class level {
             divCard.style.border = '0px';
             divCard.id = `${i}`;
             divCard.addEventListener('click', this._onClickCard.bind(this));
-            const divFront = this._createDivBlock('rounded card__face card__face--front border border-dark', '<img class="pt-5" src="picture/back.png" style="height: auto; width: 100%;">');
-            const divBack = this._createDivBlock('rounded card__face card__face--back border border-dark', `<img class="pt-5" src="picture/${this._cards[i].src}" style="height: auto; width: 100%;">`);
+            const divFront = this._createDivBlock('rounded card__face card__face--front border border-dark', '<img src="picture/back.png" style="height: auto; width: 100%;">');
+            const divBack = this._createDivBlock('rounded card__face card__face--back border border-dark', `<img src="picture/${this._cards[i].src}" style="height: auto; width: 100%;">`);
             this._field.append(divScene);
             divScene.append(divCard);
             divCard.append(divFront);
