@@ -34,11 +34,11 @@ export class level {
     
             const divFront: HTMLElement = this._createDivBlock(
                 'rounded card__face card__face--front border border-dark',
-                '<img class="pt-5" src="picture/back.png" style="height: auto; width: 100%;">');
+                '<img src="picture/back.png" style="height: auto; width: 100%;">');
     
             const divBack: HTMLElement = this._createDivBlock(
                 'rounded card__face card__face--back border border-dark',
-                `<img class="pt-5" src="picture/${this._cards[i].src}" style="height: auto; width: 100%;">`);
+                `<img src="picture/${this._cards[i].src}" style="height: auto; width: 100%;">`);
     
             this._field.append(divScene);
             divScene.append(divCard);
